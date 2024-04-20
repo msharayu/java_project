@@ -1,0 +1,120 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
+public class CurrencyConverterApp extends JFrame implements ActionListener {
+    // Currency exchange rates (just for demonstration purposes)
+    private static final double USD_TO_INR = 74.50;
+    private static final double EUR_TO_INR = 88.20;
+    private static final double GBP_TO_INR = 103.40;
+    private static final double JPY_TO_INR = 0.68;
+
+    private JComboBox<String> fromCurrencyOptions;
+    private JComboBox<String> toCurrencyOptions;
+    private JTextField amountInput;
+    private JLabel resultLabel;
+
+    public CurrencyConverterApp() {
+        setTitle("Currency Converter");
+        setSize(350, 200);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); // Center the frame on the screen
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 2, 5, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        String[] currencies = {"USD", "EUR", "GBP", "JPY", "INR"};
+        fromCurrencyOptions = new JComboBox<>(currencies);
+        toCurrencyOptions = new JComboBox<>(currencies);
+
+        amountInput = new JTextField();
+        amountInput.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        JButton convertButton = new JButton("Convert");
+        convertButton.addActionListener(this);
+        convertButton.setBackground(Color.decode("#4CAF50")); // Green color for the button
+        convertButton.setForeground(Color.WHITE); // White text color
+        convertButton.setFocusPainted(false); // Remove focus border
+
+        resultLabel = new JLabel("", SwingConstants.CENTER);
+
+        // Styling for result label
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        resultLabel.setForeground(Color.decode("#2196F3")); // Blue color for the text
+
+        panel.add(new JLabel("Amount:"));
+        panel.add(amountInput);
+        panel.add(new JLabel("From:"));
+        panel.add(fromCurrencyOptions);
+        panel.add(new JLabel("To:"));
+        panel.add(toCurrencyOptions);
+        panel.add(convertButton);
+        panel.add(resultLabel);
+
+        getContentPane().add(panel);
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Convert")) {
+            convertCurrency();
+        }
+    }
+
+    private void convertCurrency() {
+        try {
+            double amount = Double.parseDouble(amountInput.getText());
+            String fromCurrency = (String) fromCurrencyOptions.getSelectedItem();
+            String toCurrency = (String) toCurrencyOptions.getSelectedItem();
+            double result = 0;
+
+            switch (fromCurrency) {
+                case "USD":
+                    result = amount * USD_TO_INR;
+                    break;
+                case "EUR":
+                    result = amount * EUR_TO_INR;
+                    break;
+                case "GBP":
+                    result = amount * GBP_TO_INR;
+                    break;
+                case "JPY":
+                    result = amount * JPY_TO_INR;
+                    break;
+                case "INR":
+                    result = amount;
+                    break;
+            }
+
+            switch (toCurrency) {
+                case "USD":
+                    result /= USD_TO_INR;
+                    break;
+                case "EUR":
+                    result /= EUR_TO_INR;
+                    break;
+                case "GBP":
+                    result /= GBP_TO_INR;
+                    break;
+                case "JPY":
+                    result /= JPY_TO_INR;
+                    break;
+                case "INR":
+                    break;
+            }
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            resultLabel.setText("<html>Result: <b>" + df.format(result) + "</b> " + toCurrency + "</html>");
+        } catch (NumberFormatException ex) {
+            resultLabel.setText("<html><font color='red'>Invalid input. Please enter a number.</font></html>");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(CurrencyConverterApp::new);
+    }
+}
