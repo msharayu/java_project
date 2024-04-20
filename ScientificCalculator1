@@ -1,0 +1,91 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class ScientificCalculator1 extends JFrame implements ActionListener {
+    private JTextField textField;
+    private double num1 = 0, num2 = 0, result = 0;
+    private char operator;
+    private JButton[] buttons;
+    private String[] buttonLabels = {
+        "7", "8", "9", "+", 
+        "4", "5", "6", "-", 
+        "1", "2", "3", "*", 
+        "0", ".", "=", "/",
+        "AC", "^", "Delete" // Removed "Perform" button
+    };
+
+    public ScientificCalculator1() {
+        setTitle("Scientific Calculator");
+        setSize(300, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(5, 4, 10, 10)); // Increased rows to accommodate "AC" button
+
+        textField = new JTextField();
+        textField.setEditable(false);
+        panel.add(textField);
+
+        buttons = new JButton[buttonLabels.length];
+
+        for (int i = 0; i < buttonLabels.length; i++) {
+            buttons[i] = new JButton(buttonLabels[i]);
+            buttons[i].addActionListener(this);
+            panel.add(buttons[i]);
+        }
+
+        add(panel);
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        String buttonText = ((JButton) e.getSource()).getText();
+
+        if (buttonText.equals("AC")) { // Check for "AC" to clear all previous operations
+            textField.setText("");
+            num1 = num2 = result = 0;
+            operator = '\u0000';
+        } else if (buttonText.equals("+") || buttonText.equals("-") || buttonText.equals("*") || buttonText.equals("/") || buttonText.equals("^")) { // Added "^" for power operation
+            num1 = Double.parseDouble(textField.getText());
+            operator = buttonText.charAt(0);
+            textField.setText("");
+        } else if (buttonText.equals("=")) {
+            num2 = Double.parseDouble(textField.getText());
+            switch (operator) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    if (num2 != 0) {
+                        result = num1 / num2;
+                    } else {
+                        textField.setText("Error");
+                        return;
+                    }
+                    break;
+                case '^': // Handle power operation
+                    result = Math.pow(num1, num2);
+                    break;
+            }
+            textField.setText(String.valueOf(result));
+        } else if (buttonText.equals("Delete")) { // Handle "Delete" button
+            String currentText = textField.getText();
+            if (currentText.length() > 0) {
+                textField.setText(currentText.substring(0, currentText.length() - 1));
+            }
+        } else {
+            textField.setText(textField.getText() + buttonText);
+        }
+    }
+
+    public static void main(String[] args) {
+        new ScientificCalculator1();
+    }
+}
